@@ -1,0 +1,113 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT TOP (100000) [user_trans_id]
+      ,[brand_id]
+      ,[user_id]
+      ,[src_tran_id]
+      ,[table_type]
+      ,[transaction_type]
+      ,[transaction_status]
+      ,[payment_facility]
+      ,[deposit_amount]
+      ,[withdraw_amount]
+      ,[bonus_amount]
+      ,[adjustment_amount]
+      ,[charges_amount]
+      ,[first_deposit_amount]
+      ,[coupon_amount]
+      ,[cash_bonus_amount]
+      ,[commission1_amount]
+      ,[commission2_amount]
+      ,[rebate_amount]
+      ,[redeem_amount]
+      ,[dep_adjustment_amount]
+      ,[wdrw_adjustment_amount]
+      ,[bonus_adjustment_amount]
+      ,[deposit_count]
+      ,[wdraw_count]
+      ,[country]
+      ,[currency]
+      ,[eur_rate]
+      ,[tran_date]
+      ,[tran_time]
+      ,[op_id]
+      ,[year]
+      ,[month]
+      ,[day]
+      ,[tran_desc]
+      ,[is_first]
+      ,[hongli_word]
+      ,[ju_word]
+      ,[promo_amount]
+      ,[deposit_amount_eur]
+      ,[withdraw_amount_eur]
+      ,[bonus_amount_eur]
+      ,[adjustment_amount_eur]
+      ,[charges_amount_eur]
+      ,[first_deposit_amount_eur]
+      ,[coupon_amount_eur]
+      ,[cash_bonus_amount_eur]
+      ,[commission1_amount_eur]
+      ,[commission2_amount_eur]
+      ,[rebate_amount_eur]
+      ,[redeem_amount_eur]
+      ,[dep_adjustment_amount_eur]
+      ,[wdrw_adjustment_amount_eur]
+      ,[bonus_adjustment_amount_eur]
+      ,[promo_amount_eur]
+      ,[trans_id]
+      ,[tran_desc2]
+      ,[hongli_word2]
+      ,[promo_code]
+      ,[create_date]
+      ,[create_time]
+  FROM [dw_prod].[dbo].[dw_user_transactions]
+  where brand_id =1
+
+
+select distinct
+		trans.src_tran_id [Id]
+		,case when trans.transaction_type = 'Deposit' then 2 else 1 end [Type]
+		,trans.user_id [ClientId]
+		,case when ps.Id  is null then 'Old System' else ps.Id end [PaymentSystemId]
+		,case when trans.transaction_type = 'Deposit' then trans.deposit_amount else trans.withdraw_amount end [Amount]
+		,trans.charges_amount  [FeeAmount]
+		,case when trans.transaction_status = 'Completed' then 3 
+			when trans.transaction_status = 'Failed' then -2
+			when trans.transaction_status = 'In process' then 0 end [State]
+		,trans.create_time [RequestTime]
+		,0 [RequestDocumentId]
+		,0 [PaymentDocumentId]
+		,null [BetshopId]
+		,[Notes]
+		,trans.trans_Desc [Info]
+		-- Raj's ID,[ModifyUserId]
+		,trans.ju_word [RejectReason]
+		,trans.tran_time [ModifyTime]
+		--Raj's Id,[AllowUserId]
+		,trans.tran_time [AllowTime]
+		--Raj's Id,[RejectUserId]
+		,trans.tran_time [Modified]
+		,0 [SessionId]
+		,0 [UpdateVersion]
+		,null [ClientNotes]
+		,null [PaidReason]
+		,null[PaymentSystemMessage]
+		,null [PaymentInfo]
+		,null [PartnerBankId]
+		,null [ImageId]
+		,trans.currency [CurrencyId]
+		,null [AssignedUserId]
+		,case when trans.transaction_type = 'Deposit' then trans.deposit_amount_eur else trans.withdraw_amount_eur end
+		,trans.charges_amount_eur
+		,case when trans.is_first=1 then 1 else 0 end
+		, case when b.src_tran_id is not null then 1 else 0 end
+from [dw_prod].[dbo].[dw_user_transactions] trans
+	left join dbo.PaymentSystem ps on (case when trans.payment_Facility= 'Direct Banking' then 'DirectBankTransfer' else trans.payment_Facility end) = ps.Name
+	left join (
+				select distinct
+					trans.user_id,case when trans.transaction_type = 'Deposit' then 2 else 1 end [Type],trans.src_tran_id,trans.tran_date 
+				from [dw_prod].[dbo].[dw_user_transactions] trans
+				where trans.transaction_type in ('Deposit','Withdraw')
+					and a.transaction_status = 'Failed'
+			) b on trans.user_id = b.user_id and (case when trans.transaction_type = 'Deposit' then 2 else 1 end) = b.[Type]  and trans.src_tran_id = b.src_tran_id and b.tran_Date <=(Case when trans.is_first=1 then trans.tran_date else null end)
+where trans.transaction_type in ('Deposit','Withdraw')
