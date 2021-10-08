@@ -22,7 +22,7 @@ CREATE TABLE [GoldblueUTC].[dbo].[Account](
 	[PreliminaryBalance] [decimal](18, 2) NOT NULL,
 	[Modified] [datetime] NOT NULL,
 	[SessionId] [int] NOT NULL,
-	[AmountEur] [decimal](18, 2) NULL,
+	[BalanceEur] [decimal](18, 2) NULL,
  CONSTRAINT [PK_Account] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -59,14 +59,13 @@ SELECT DISTINCT
       ,[PreliminaryBalance]
       ,DATEADD(HOUR,-4,a.[Modified])
       ,[SessionId]
-	  ,case when a.CurrencyId = 'EUR' THEN a.Balance else a.Balance/cru.Rate end [AmountEur]
+	  ,case when a.CurrencyId = 'EUR' THEN a.Balance else a.Balance/cru.Rate end [BalaceEur]
 --	 ,LEFT(RIGHT(Id, len(Id) - charindex('-', Id)), CHARINDEX('-', RIGHT(Id, len(Id) - charindex('-', Id))) - 1)
---	 	,LEFT([Id], CHARINDEX('-', [Id]) - 1)
+--	 ,LEFT([Id], CHARINDEX('-', [Id]) - 1)
 --	,LEFT(RIGHT([Id], len([Id]) - charindex('-', [Id])), CHARINDEX('-', RIGHT([Id], len([Id]) - charindex('-', [Id]))) - 1)
 --	,LEFT(RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),LEN(RIGHT([Id], len([Id]) - charindex('-', [Id])))- charindex ('-',RIGHT([Id], len([Id]) - charindex('-', [Id])))), CHARINDEX('-', RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),LEN(RIGHT([Id], len([Id]) - charindex('-', [Id])))- charindex ('-',RIGHT([Id], len([Id]) - charindex('-', [Id]))))) - 1)
 --	,LEFT(RIGHT(RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),len(RIGHT([Id], len([Id]) - charindex('-', [Id]))) - charindex ('-' ,RIGHT([Id], len([Id]) - charindex('-', [Id])))),len(RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),len(RIGHT([Id], len([Id]) - charindex('-', [Id]))) - charindex ('-' ,RIGHT([Id], len([Id]) - charindex('-', [Id]))))) - charindex ('-',RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),len(RIGHT([Id], len([Id]) - charindex('-', [Id]))) - charindex ('-' ,RIGHT([Id], len([Id]) - charindex('-', [Id])))))) , charindex ('-',RIGHT(RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),len(RIGHT([Id], len([Id]) - charindex('-', [Id]))) - charindex ('-' ,RIGHT([Id], len([Id]) - charindex('-', [Id])))),len(RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),len(RIGHT([Id], len([Id]) - charindex('-', [Id]))) - charindex ('-' ,RIGHT([Id], len([Id]) - charindex('-', [Id]))))) - charindex ('-',RIGHT(RIGHT([Id], len([Id]) - charindex('-', [Id])),len(RIGHT([Id], len([Id]) - charindex('-', [Id]))) - charindex ('-' ,RIGHT([Id], len([Id]) - charindex('-', [Id])))))))-1)
-
   FROM [Goldblue].[dbo].[Account] a
-	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on EOMONTH(DATEADD(HOUR,-4,a.[Modified]))= cru.CalendarDt and a.CurrencyId = cru.FromCurrency		
+	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.[Modified]))-1, -1))= cru.CalendarDt and a.CurrencyId = cru.FromCurrency		
 
 	

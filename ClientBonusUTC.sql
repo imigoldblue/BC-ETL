@@ -86,35 +86,38 @@ GO
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[ClientBonus] ON
 GO
+
+delete from [GoldblueUTC].[dbo].[ClientBonus] where [Created]>= DATEADD(DAY, -1,GETDATE());
+
 insert into [GoldblueUTC].[dbo].[ClientBonus]
-([Id]
-      ,[ClientId]
-      ,[PartnerBonusId]
-      ,[AcceptanceType]
-      ,[AcceptanceDate]
-      ,[ResultType]
-      ,[ResultDate]
-      ,[Count]
-      ,[Amount]
-      ,[ExpirationDate]
-      ,[ExternalId]
-      ,[RealAmount]
-      ,[WinAmount]
-      ,[WageredAmount]
-      ,[ToWagerAmount]
-      ,[PaidAmount]
-      ,[Note]
-      ,[CreatedBySessionId]
-      ,[Created]
-      ,[Modified]
-      ,[SessionId]
-      ,[DocumentId]
-      ,[PaymentDocumentId]
-      ,[UpdateVersion]
-      ,[PromoCodeId]
-      ,[CancellationNote]
-      ,[CampainId]
-	  ,[AmountEur] 
+(	[Id]
+	,[ClientId]
+	,[PartnerBonusId]
+	,[AcceptanceType]
+	,[AcceptanceDate]
+	,[ResultType]
+	,[ResultDate]
+	,[Count]
+	,[Amount]
+	,[ExpirationDate]
+	,[ExternalId]
+	,[RealAmount]
+	,[WinAmount]
+	,[WageredAmount]
+	,[ToWagerAmount]
+	,[PaidAmount]
+	,[Note]
+	,[CreatedBySessionId]
+	,[Created]
+	,[Modified]
+	,[SessionId]
+	,[DocumentId]
+	,[PaymentDocumentId]
+	,[UpdateVersion]
+	,[PromoCodeId]
+	,[CancellationNote]
+	,[CampainId]
+	,[AmountEur] 
 	,[RealAmountEur] 
 	,[WinAmountEur] 
 	,[WageredAmountEur] 
@@ -155,7 +158,8 @@ SELECT DISTINCT a.[Id]
 	  ,case when cl.CurrencyId = 'EUR' THEN a.PaidAmount else a.PaidAmount/cru.Rate end 
   FROM [Goldblue].[dbo].[ClientBonus] a
 	join [Goldblue].[dbo].[Client] cl on a.ClientId = cl.Id 
-	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on EOMONTH(DATEADD(HOUR,-4,a.AcceptanceDate))= cru.CalendarDt and cl.currencyid = cru.FromCurrency	
+	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.AcceptanceDate))-1, -1))= cru.CalendarDt and cl.currencyid = cru.FromCurrency	
+where DATEADD(HOUR,-4,a.[Created])>= DATEADD(DAY, -1,GETDATE())
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[ClientBonus] OFF
 GO

@@ -63,6 +63,9 @@ GO
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[ClientRequest] ON
 GO
+
+delete from [GoldblueUTC].[dbo].[ClientRequest] where [RequestTime]>= DATEADD(DAY, -1,GETDATE());
+
 insert into [GoldblueUTC].[dbo].[ClientRequest]
 ([Id]
       ,[Type]
@@ -100,8 +103,8 @@ insert into [GoldblueUTC].[dbo].[ClientRequest]
 	  ,[RejectedBeforeFirst])
 SELECT DISTINCT
 		[Id]
-      ,[Type]
-      ,[ClientId]
+      ,a.[Type]
+      ,a.[ClientId]
       ,[PaymentSystemId]
       ,[Amount]
       ,[FeeAmount]
@@ -134,9 +137,8 @@ SELECT DISTINCT
 	  ,case when DATEADD(HOUR,-4,a.[AllowTime])= b.isfirst then 1 else 0 end 
 	  ,case when [State] = -2 and DATEADD(HOUR,-4,[RequestTime])<= b.isfirst then 1 else 0 end
   FROM [Goldblue].[dbo].[ClientRequest] a
-	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on COALESCE(EOMONTH(DATEADD(HOUR,-4,a.[AllowTime])),EOMONTH(DATEADD(HOUR,-4,a.[RequestTime])))= cru.CalendarDt and a.CurrencyId = cru.FromCurrency
-	left join (select  a.clientid,a.type,min(DATEADD(HOUR,-4,[AllowTime])) isfirst from [Goldblue].[dbo].[ClientRequest] where a.state = 3 group by a.clientid,a.type) b on a.clientid =b.clientid and a.[type]=b.[type]
-
-
+	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on COALESCE(convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.[AllowTime]))-1, -1)),convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.[RequestTime]))-1, -1)))= cru.CalendarDt and a.CurrencyId = cru.FromCurrency
+	left join (select distinct a.clientid,a.type,min(DATEADD(HOUR,-4,[AllowTime])) isfirst from [Goldblue].[dbo].[ClientRequest] a where a.state = 3 group by a.clientid,a.type) b on a.clientid =b.clientid and a.[type]=b.[type]
+where DATEADD(HOUR,-4,[RequestTime])>= DATEADD(DAY, -1,GETDATE());
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[ClientRequest] OFF
 GO

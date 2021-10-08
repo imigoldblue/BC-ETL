@@ -337,7 +337,8 @@ SELECT DISTINCT
 	  ,case when a.CurrencyId = 'EUR' THEN a.TaxAmount else a.TaxAmount/cru.Rate end
 
   FROM [Goldblue].[dbo].[Bet] a
-	 LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on COALESCE(EOMONTH(DATEADD(HOUR,-4,a.CalcDate)),EOMONTH(DATEADD(HOUR,-4,a.Created)))= cru.CalendarDt and a.CurrencyId = cru.FromCurrency	
+	 LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on COALESCE(convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.CalcDate))-1, -1)),convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.Created))-1, -1)))= cru.CalendarDt and a.CurrencyId = cru.FromCurrency	
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[Bet] OFF
 GO
+

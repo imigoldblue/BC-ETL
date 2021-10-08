@@ -44,6 +44,7 @@ GO
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[Document] ON
 GO
+delete from [GoldblueUTC].[dbo].[Document] where [Created]>= DATEADD(DAY, -1,GETDATE());
 
 insert into [GoldblueUTC].[dbo].[Document]
 	([Id]       ,[PartnerId]      ,[TypeId]      ,[GameId]      ,[CurrencyId]      ,[State]      ,[Amount]      ,[TransactionDate]      ,[Created]      ,[Modified]    	,[SessionId]      ,[AmountExpression]      ,[CashDeskId]
@@ -77,7 +78,8 @@ SELECT DISTINCT
 	  ,case when d.CurrencyId = 'EUR' THEN d.Amount else d.Amount/cru.Rate end [AmountEur]
 
 FROM [Goldblue].[dbo].[Document] d
-	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on EOMONTH([Created])= cru.CalendarDt and d.CurrencyId = cru.FromCurrency
+	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,d.Created))-1, -1))= cru.CalendarDt and d.CurrencyId = cru.FromCurrency
+where DATEADD(HOUR,-4,d.[Created])>= DATEADD(DAY, -1,GETDATE())
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[Document] OFF
 GO

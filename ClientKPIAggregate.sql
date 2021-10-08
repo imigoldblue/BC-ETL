@@ -1,7 +1,6 @@
 USE [GoldblueUTC]
 GO
 
-/****** Object:  Table [dbo].[ClientKPIAggregate]    Script Date: 28/08/2021 21:25:46 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -12,7 +11,7 @@ GO
 CREATE TABLE [GoldblueUTC].[dbo].[ClientKPIAggregate]
 (	
 	[ClientId] [int] NOT NULL
-	,[Login] [nvarchar](255) NOT NULL
+	,[UserName] [nvarchar](255) NOT NULL
 	,[BrandId] [int] NOT NULL
 	,[BrandName] [nvarchar](255) NOT NULL
 	,[Country] [nvarchar](255) NOT NULL
@@ -98,6 +97,21 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPIAggregate]
 	,[SportBonusWinAmount] [decimal] (18,2) NULL 
 	,[SportBonusWinCount] [int] NULL 
 	,[SportBonusGGRAmount] [decimal] (18,2) NULL
+	,[OtherTotalBetAmount] [decimal] (18,2) NULL
+	,[OtherTotalBetCount] [int] NULL
+	,[OtherTotalWinAmount] [decimal] (18,2) NULL
+	,[OtherTotalWinCount] [int] NULL
+	,[OtherTotalGGRAmount] [decimal] (18,2) NULL
+	,[OtherCashBetAmount] [decimal] (18,2) NULL 
+	,[OtherCashBetCount] [int] NULL 
+	,[OtherCashWinAmount] [decimal] (18,2) NULL 
+	,[OtherCashWinCount] [int] NULL 
+	,[OtherCashGGRAmount] [decimal] (18,2) NULL
+	,[OtherBonusBetAmount] [decimal] (18,2) NULL 
+	,[OtherBonusBetCount] [int] NULL 
+	,[OtherBonusWinAmount] [decimal] (18,2) NULL 
+	,[OtherBonusWinCount] [int] NULL 
+	,[OtherBonusGGRAmount] [decimal] (18,2) NULL
 	,[JackpotAmount] [decimal] (18,2) NULL 
 	,[JackpotCount] [int] NULL 
 	,[LiveDealerTipAmount] [decimal] (18,2) NULL 
@@ -112,6 +126,7 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPIAggregate]
 	,[BonusCancelledCount] [int] NULL 
 	,[BonusRedeemedAmount] [decimal] (18,2) NULL 
 	,[BonusRedeemedCount] [int] NULL 
+	,[ApportionCostAmount] [decimal] (18,2) NULL 
 	,[CashbackBonus] [decimal] (18,2) NULL 
 	,[CasinoCashbackBonus] [decimal] (18,2) NULL 
 	,[LoyaltyPointReward] [decimal] (18,2) NULL 
@@ -207,6 +222,15 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPIAggregate]
 	,[SportBonusBetAmountEur] [decimal] (18,2) NULL 
 	,[SportBonusWinAmountEur] [decimal] (18,2) NULL 
 	,[SportBonusGGRAmountEur] [decimal] (18,2) NULL 
+	,[OtherTotalBetAmountEur] [decimal] (18,2) NULL
+	,[OtherTotalWinAmountEur] [decimal] (18,2) NULL
+	,[OtherTotalGGRAmountEur] [decimal] (18,2) NULL 
+	,[OtherCashBetAmountEur] [decimal] (18,2) NULL 
+	,[OtherCashWinAmountEur] [decimal] (18,2) NULL 
+	,[OtherCashGGRAmountEur] [decimal] (18,2) NULL 
+	,[OtherBonusBetAmountEur] [decimal] (18,2) NULL 
+	,[OtherBonusWinAmountEur] [decimal] (18,2) NULL 
+	,[OtherBonusGGRAmountEur] [decimal] (18,2) NULL 
 	,[JackpotAmountEur] [decimal] (18,2) NULL
 	,[LiveDealerTipAmountEur] [decimal] (18,2) NULL
 	,[BonusAmountEur] [decimal] (18,2) NULL
@@ -214,6 +238,7 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPIAggregate]
 	,[SportBonusAmountEur] [decimal] (18,2) NULL 
 	,[BonusCancelledAmountEur] [decimal] (18,2) NULL
 	,[BonusRedeemedAmountEur] [decimal] (18,2) NULL
+	,[ApportionCostAmountEur] [decimal] (18,2) NULL 
 	,[CashbackBonusEur] [decimal] (18,2) NULL
 	,[CasinoCashbackBonusEur] [decimal] (18,2) NULL
 	,[LoyaltyPointRewardEur] [decimal] (18,2) NULL
@@ -248,384 +273,9 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPIAggregate]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/*
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [DepositAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [DepositCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [RejectedDepositAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [RejectedDepositCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [WithdrawalAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [WithdrawalCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [RejectedWithdrawalAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [RejectedWithdrawalCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [NetSpreadAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CorrectionUpAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CorrectionUpCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CorrectionDownAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CorrectionDownCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BonusCorrectionUpAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BonusCorrectionUpCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BonusCorrectionDownAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BonusCorrectionDownCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoDepositAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoDepositCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoWithdrawalAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoWithdrawalCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoRejectedWithdrawalAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoRejectedWithdrawalCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCorrectionUpAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCorrectionUpCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCorrectionDownAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCorrectionDownCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBonusBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBonusBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBonusWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBonusWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBonusGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalBonusHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashReturnAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TotalCashReturnCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoTotalBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoTotalBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoTotalWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoTotalWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoTotalGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoTotalHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashReturnAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoCashReturnCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportTotalBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportTotalBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportTotalWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportTotalWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportTotalGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportTotalHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SporBonusGGRAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusHold]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashReturnAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportCashReturnCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportDecreaseWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportDecreaseWinCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoBonusCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBonusCount]
-GO
-
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TransferFromMainAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TransferFromMainCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TransferToMainAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [TransferToMainCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [MoneyFromPointAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [MoneyFromPointCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [PointEarnedAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [PointEarnedCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [PointToMoneyAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [PointToMoneyCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BuddyToBuddyWithdrawalAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BuddyToBuddyWithdrawalCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BuddyToBuddyDepositAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [BuddyToBuddyDepositCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportDepositCashBackBonusAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportDepositCashBackBonusCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoDepositCashBackBonusAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [CasinoDepositCashBackBonusCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [ClaimBetCount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [ClaimBetAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [ClaimBetReturnAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [ClaimBetWinAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [WalletTransferInAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [WalletTransferOutAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [StakeTaxAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [JackPotWin]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [WithdrawTaxAmount]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBetAmountAPI]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportBetCountAPI]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportWinAmountAPI]
-GO
-
-ALTER TABLE [dbo].[ClientKPIAggregate] ADD  DEFAULT ((0)) FOR [SportWinCountAPI]
-GO*/
-;
 
 truncate table [GoldblueUTC].[dbo].[ClientKPIAggregate];
-insert into [GoldblueUTC].[dbo].[ClientKPIAggregate]
+insert into [GoldblueUTC].[dbo].[ClientKPIAggregate] 
 select distinct 
 	cl.id,cl.login,1 as Brand,'Happistar' as BrandName,reg.Alpha2Code ,convert(date,cl.Created) RegDate,fd.FTDDate,fd.FTDAmount,fd.FTDAmountEur,cl.CurrencyId
 	,bal.[RealWalletBalance],bal.[BonusWalletBalance],bal.[CasinoBonusWalletBalance],bal.[SportBonusWalletBalance]
@@ -654,6 +304,9 @@ select distinct
 	,sum([SportTotalBetAmount]),sum([SportTotalBetCount]),sum([SportTotalWinAmount]),sum([SportTotalWinCount]),sum([SportTotalGGRAmount])
 	,sum([SportCashBetAmount]) ,sum([SportCashBetCount]) ,sum([SportCashWinAmount]) ,sum([SportCashWinCount]) ,sum([SportCashGGRAmount])
 	,sum([SportBonusBetAmount]) ,sum([SportBonusBetCount]) ,sum([SportBonusWinAmount]) ,sum([SportBonusWinCount]) ,sum([SportBonusGGRAmount])
+	,sum([OtherTotalBetAmount]),sum([OtherTotalBetCount]),sum([OtherTotalWinAmount]),sum([OtherTotalWinCount]),sum([OtherTotalGGRAmount])
+	,sum([OtherCashBetAmount]) ,sum([OtherCashBetCount]) ,sum([OtherCashWinAmount]) ,sum([OtherCashWinCount]) ,sum([OtherCashGGRAmount])
+	,sum([OtherBonusBetAmount]) ,sum([OtherBonusBetCount]) ,sum([OtherBonusWinAmount]) ,sum([OtherBonusWinCount]) ,sum([OtherBonusGGRAmount])
 	,sum([JackpotAmount])
 	,sum([JackpotCount])
 	,sum([LiveDealerTipAmount])
@@ -668,6 +321,7 @@ select distinct
 	,sum([BonusCancelledCount])
 	,sum([BonusRedeemedAmount])
 	,sum([BonusRedeemedCount])
+	,sum([ApportionCostAmount])
 	,sum([CashbackBonus])
 	,sum([CasinoCashbackBonus])
 	,sum([LoyaltyPointReward])
@@ -737,6 +391,9 @@ select distinct
 	,sum([SportTotalBetAmountEur]),sum([SportTotalWinAmountEur]),sum([SportTotalGGRAmountEur])
 	,sum([SportCashBetAmountEur])  ,sum([SportCashWinAmountEur])  ,sum([SportCashGGRAmountEur])
 	,sum([SportBonusBetAmountEur])  ,sum([SportBonusWinAmountEur])  ,sum([SportBonusGGRAmountEur])
+	,sum([OtherTotalBetAmountEur]),sum([OtherTotalWinAmountEur]),sum([OtherTotalGGRAmountEur])
+	,sum([OtherCashBetAmountEur])  ,sum([OtherCashWinAmountEur])  ,sum([OtherCashGGRAmountEur])
+	,sum([OtherBonusBetAmountEur])  ,sum([OtherBonusWinAmountEur])  ,sum([OtherBonusGGRAmountEur])
 	,sum([JackpotAmountEur])
 	,sum([LiveDealerTipAmountEur])	
 	,sum([BonusAmountEur])
@@ -744,6 +401,7 @@ select distinct
 	,sum([SportBonusAmountEur]) 
 	,sum([BonusCancelledAmountEur])
 	,sum([BonusRedeemedAmountEur])
+	,sum([ApportionCostAmountEur])
 	,sum([CashbackBonusEur])
 	,sum([CasinoCashbackBonusEur])
 	,sum([LoyaltyPointRewardEur])
@@ -782,13 +440,13 @@ from [GoldblueUTC].[dbo].Client cl
 				SELECT DISTINCT
 						a.ObjectId [ClientId]
 						,sum(case when a.BalanceTypeId=5211 then a.[Balance] else 0 end) RealWalletBalance
-						,sum(case when a.BalanceTypeId=8124 then a.[Balance] else 0 end)+sum(case when a.BalanceTypeId=8154 then a.[Balance] else 0 end) [BonusWalletBalance] 
-						,sum(case when a.BalanceTypeId=8124 then a.[Balance] else 0 end) CasinoBonusWalletBalance
-						,sum(case when a.BalanceTypeId=8154 then a.[Balance] else 0 end) SportBonusWalletBalance
-						,sum(case when a.BalanceTypeId=5211 then a.[AmountEur] else 0 end) RealWalletBalanceEur
-						,sum(case when a.BalanceTypeId=8124 then a.[AmountEur] else 0 end)+sum(case when a.BalanceTypeId=8154 then a.[AmountEur] else 0 end) [BonusWalletBalanceEur] 
-						,sum(case when a.BalanceTypeId=8124 then a.[AmountEur] else 0 end) CasinoBonusWalletBalanceEur
-						,sum(case when a.BalanceTypeId=8154 then a.[AmountEur] else 0 end) SportBonusWalletBalanceEur
+						,sum(case when a.BalanceTypeId in (8124,8125) then a.[Balance] else 0 end)+sum(case when a.BalanceTypeId in (8154,8155) then a.[Balance] else 0 end) [BonusWalletBalance] 
+						,sum(case when a.BalanceTypeId in (8124,8125) then a.[Balance] else 0 end) CasinoBonusWalletBalance
+						,sum(case when a.BalanceTypeId in (8154,8155) then a.[Balance] else 0 end) SportBonusWalletBalance
+						,sum(case when a.BalanceTypeId=5211 then a.[BalanceEur] else 0 end) RealWalletBalanceEur
+						,sum(case when a.BalanceTypeId in (8124,8125) then a.[BalanceEur] else 0 end)+sum(case when a.BalanceTypeId in (8154,8155) then a.[BalanceEur] else 0 end) [BonusWalletBalanceEur] 
+						,sum(case when a.BalanceTypeId in (8124,8125) then a.[BalanceEur] else 0 end) CasinoBonusWalletBalanceEur
+						,sum(case when a.BalanceTypeId in (8154,8155) then a.[BalanceEur] else 0 end) SportBonusWalletBalanceEur
 					FROM [GoldblueUTC].[dbo].[Account] a 
 					group by ObjectId 			
 				) bal on cl.id = bal.clientid

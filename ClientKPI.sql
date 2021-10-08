@@ -11,9 +11,10 @@ DROP TABLE IF EXISTS [GoldblueUTC].[dbo].[ClientKPI]
 GO
 
 CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
-	[ClientId] [int] NOT NULL,
-	[Date] [date] NOT NULL,
-	[CurrencyId] [char](3) NOT NULL
+	[ClientId] [int] NOT NULL
+	,[UserName] [varchar](255) NOT NULL
+	,[Date] [date] NOT NULL
+	,[CurrencyId] [char](3) NOT NULL
 	,[Country] [varchar](255) NOT NULL
 	,[Balance] [decimal] (18,2) NOT NULL 
 	,[BonusWalletBalance] [decimal] (18,2) NOT NULL 
@@ -92,6 +93,21 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
 	,[SportBonusWinAmount] [decimal] (18,2) NOT NULL 
 	,[SportBonusWinCount] [int] NULL 
 	,[SportBonusGGRAmount] [decimal] (18,2) NOT NULL
+	,[OtherTotalBetAmount] [decimal] (18,2) NOT NULL
+	,[OtherTotalBetCount] [int] NULL
+	,[OtherTotalWinAmount] [decimal] (18,2) NOT NULL
+	,[OtherTotalWinCount] [int] NULL
+	,[OtherTotalGGRAmount] [decimal] (18,2) NOT NULL
+	,[OtherCashBetAmount] [decimal] (18,2) NOT NULL 
+	,[OtherCashBetCount] [int] NULL 
+	,[OtherCashWinAmount] [decimal] (18,2) NOT NULL 
+	,[OtherCashWinCount] [int] NULL 
+	,[OtherCashGGRAmount] [decimal] (18,2) NOT NULL
+	,[OtherBonusBetAmount] [decimal] (18,2) NOT NULL 
+	,[OtherBonusBetCount] [int] NULL 
+	,[OtherBonusWinAmount] [decimal] (18,2) NOT NULL 
+	,[OtherBonusWinCount] [int] NULL 
+	,[OtherBonusGGRAmount] [decimal] (18,2) NOT NULL
 	,[JackpotAmount] [decimal] (18,2) NOT NULL 
 	,[JackpotCount] [int] NULL 
 	,[LiveDealerTipAmount] [decimal] (18,2) NOT NULL 
@@ -106,6 +122,7 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
 	,[BonusCancelledCount] [int] NULL 
 	,[BonusRedeemedAmount] [decimal] (18,2) NOT NULL 
 	,[BonusRedeemedCount] [int] NULL 
+	,[ApportionCostAmount]  [decimal] (18,2) NOT NULL 
 	,[CashbackBonus] [decimal] (18,2) NOT NULL 
 	,[CasinoCashbackBonus] [decimal] (18,2) NOT NULL 
 	,[LoyaltyPointReward] [decimal] (18,2) NOT NULL 
@@ -201,6 +218,15 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
 	,[SportBonusBetAmountEur] [decimal] (18,2) NOT NULL 
 	,[SportBonusWinAmountEur] [decimal] (18,2) NOT NULL 
 	,[SportBonusGGRAmountEur] [decimal] (18,2) NOT NULL 
+	,[OtherTotalBetAmountEur] [decimal] (18,2) NOT NULL
+	,[OtherTotalWinAmountEur] [decimal] (18,2) NOT NULL
+	,[OtherTotalGGRAmountEur] [decimal] (18,2) NOT NULL
+	,[OtherCashBetAmountEur] [decimal] (18,2) NOT NULL 
+	,[OtherCashWinAmountEur] [decimal] (18,2) NOT NULL 
+	,[OtherCashGGRAmountEur] [decimal] (18,2) NOT NULL
+	,[OtherBonusBetAmountEur] [decimal] (18,2) NOT NULL 
+	,[OtherBonusWinAmountEur] [decimal] (18,2) NOT NULL 
+	,[OtherBonusGGRAmountEur] [decimal] (18,2) NOT NULL
 	,[JackpotAmountEur] [decimal] (18,2) NOT NULL
 	,[LiveDealerTipAmountEur] [decimal] (18,2) NOT NULL
 	,[BonusAmountEur] [decimal] (18,2) NOT NULL
@@ -208,6 +234,7 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
 	,[SportBonusAmountEur] [decimal] (18,2) NOT NULL 
 	,[BonusCancelledAmountEur] [decimal] (18,2) NOT NULL
 	,[BonusRedeemedAmountEur] [decimal] (18,2) NOT NULL
+	,[ApportionCostAmountEur] [decimal] (18,2) NOT NULL
 	,[CashbackBonusEur] [decimal] (18,2) NOT NULL
 	,[CasinoCashbackBonusEur] [decimal] (18,2) NOT NULL
 	,[LoyaltyPointRewardEur] [decimal] (18,2) NOT NULL
@@ -234,6 +261,7 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
 	,[LoyaltyPointCorrectionDownAmountEur] [decimal] (18,2) NOT NULL
 	,[DepositCorrectionAmountEur] [decimal] (18,2) NOT NULL
 	,[CashBackCorrectionAmountEur] [decimal] (18,2) NOT NULL
+	,[Modified] [datetime] NOT NULL,
 
  CONSTRAINT [PK_ClientKPI] PRIMARY KEY CLUSTERED 
 (
@@ -244,9 +272,12 @@ CREATE TABLE [GoldblueUTC].[dbo].[ClientKPI](
 ) ON [PRIMARY]
 GO
 
+
+
+delete from [GoldblueUTC].[dbo].[ClientKPI] where [Date]>= DATEADD(DAY,-1,GETDATE());
 INSERT INTO [GoldblueUTC].[dbo].[ClientKPI]
 SELECT DISTINCT
-	a.[ClientId],a.[Date],a.CurrencyId,reg.Alpha2Code
+	a.[ClientId],cl.Login,a.[Date],a.CurrencyId,reg.Alpha2Code
 	,sum([RealWalletBalance])
 	,sum([BonusWalletBalance])
 	,sum([SlotBonusWalletBalance])
@@ -276,6 +307,9 @@ SELECT DISTINCT
 	,sum([SportTotalBetAmount]),sum([SportTotalBetCount]),sum([SportTotalWinAmount]),sum([SportTotalWinCount]),sum([SportTotalGGRAmount])
 	,sum([SportCashBetAmount]) ,sum([SportCashBetCount]) ,sum([SportCashWinAmount]) ,sum([SportCashWinCount]) ,sum([SportCashGGRAmount])
 	,sum([SportBonusBetAmount]) ,sum([SportBonusBetCount]) ,sum([SportBonusWinAmount]) ,sum([SportBonusWinCount]) ,sum([SportBonusGGRAmount])
+	,sum([OtherTotalBetAmount]),sum([OtherTotalBetCount]),sum([OtherTotalWinAmount]),sum([OtherTotalWinCount]),sum([OtherTotalGGRAmount])
+	,sum([OtherCashBetAmount]) ,sum([OtherCashBetCount]) ,sum([OtherCashWinAmount]) ,sum([OtherCashWinCount]) ,sum([OtherCashGGRAmount])
+	,sum([OtherBonusBetAmount]) ,sum([OtherBonusBetCount]) ,sum([OtherBonusWinAmount]) ,sum([OtherBonusWinCount]) ,sum([OtherBonusGGRAmount])
 	,sum([JackpotAmount])
 	,sum([JackpotCount])
 	,sum([LiveDealerTipAmount])
@@ -290,6 +324,7 @@ SELECT DISTINCT
 	,sum([BonusCancelledCount])
 	,sum([BonusRedeemedAmount])
 	,sum([BonusRedeemedCount])
+	,sum([ApportionCostAmount])
 	,sum([CashbackBonus])
 	,sum([CasinoCashbackBonus])
 	,sum([LoyaltyPointReward])
@@ -360,6 +395,9 @@ SELECT DISTINCT
 	,sum([SportTotalBetAmountEur]),sum([SportTotalWinAmountEur]),sum([SportTotalGGRAmountEur])
 	,sum([SportCashBetAmountEur])  ,sum([SportCashWinAmountEur])  ,sum([SportCashGGRAmountEur])
 	,sum([SportBonusBetAmountEur])  ,sum([SportBonusWinAmountEur])  ,sum([SportBonusGGRAmountEur])
+	,sum([OtherTotalBetAmountEur]),sum([OtherTotalWinAmountEur]),sum([OtherTotalGGRAmountEur])
+	,sum([OtherCashBetAmountEur])  ,sum([OtherCashWinAmountEur])  ,sum([OtherCashGGRAmountEur])
+	,sum([OtherBonusBetAmountEur])  ,sum([OtherBonusWinAmountEur])  ,sum([OtherBonusGGRAmountEur])
 	,sum([JackpotAmountEur])
 	,sum([LiveDealerTipAmountEur])	
 	,sum([BonusAmountEur])
@@ -367,6 +405,7 @@ SELECT DISTINCT
 	,sum([SportBonusAmountEur]) 
 	,sum([BonusCancelledAmountEur])
 	,sum([BonusRedeemedAmountEur])
+	,sum([ApportionCostAmountEur])
 	,sum([CashbackBonusEur])
 	,sum([CasinoCashbackBonusEur])
 	,sum([LoyaltyPointRewardEur])
@@ -393,7 +432,7 @@ SELECT DISTINCT
 	,sum([LoyaltyPointCorrectionDownAmountEur])
 	,sum([DepositCorrectionAmountEur])
 	,sum([CashBackCorrectionAmountEur])
-
+	,SYSDATETIME()
 FROM(
 			SELECT DISTINCT
 				[ClientId]
@@ -428,6 +467,9 @@ FROM(
 				,0 [SportTotalBetAmount],0 [SportTotalBetCount],0 [SportTotalWinAmount],0 [SportTotalWinCount],0 [SportTotalGGRAmount]
 				,0 [SportCashBetAmount] ,0 [SportCashBetCount] ,0 [SportCashWinAmount] ,0 [SportCashWinCount] ,0 [SportCashGGRAmount]
 				,0 [SportBonusBetAmount] ,0 [SportBonusBetCount] ,0 [SportBonusWinAmount] ,0 [SportBonusWinCount] ,0 [SportBonusGGRAmount]
+				,0 [OtherTotalBetAmount],0 [OtherTotalBetCount],0 [OtherTotalWinAmount],0 [OtherTotalWinCount],0 [OtherTotalGGRAmount]
+				,0 [OtherCashBetAmount] ,0 [OtherCashBetCount] ,0 [OtherCashWinAmount] ,0 [OtherCashWinCount] ,0 [OtherCashGGRAmount]
+				,0 [OtherBonusBetAmount] ,0 [OtherBonusBetCount] ,0 [OtherBonusWinAmount] ,0 [OtherBonusWinCount] ,0 [OtherBonusGGRAmount]
 				,sum(case when cr.TypeId =95 and cr.state = 10 then cr.amount else 0 end) [JackpotAmount]
 				,count(distinct case when cr.TypeId =95 and cr.state = 10 then cr.id else null end) [JackpotCount]
 				,sum(case when cr.TypeId =50 and cr.state = 10 then cr.amount else 0 end) [LiveDealerTipAmount]
@@ -443,6 +485,7 @@ FROM(
 				,count(distinct case when cr.TypeId =82 and cr.state = 10 then cr.id else null end) [BonusCancelledCount]
 				,sum(case when cr.TypeId =83 and cr.state = 10 then cr.amount else 0 end) [BonusRedeemedAmount]
 				,count(distinct case when cr.TypeId =83 and cr.state = 10 then cr.id else null end) [BonusRedeemedCount]
+				,0 [ApportionCostAmount]
 				,sum(case when cr.TypeId =84 and cr.state = 10 then cr.amount else 0 end) [CashbackBonus]
 				,sum(case when cr.TypeId =87 and cr.state = 10 then cr.amount else 0 end) [CasinoCashbackBonus]
 				,sum(case when cr.TypeId =504 and cr.state = 10 then cr.amount else 0 end) [LoyaltyPointReward]
@@ -517,6 +560,9 @@ FROM(
 				,0 [SportTotalBetAmountEur],0 [SportTotalWinAmountEur],0 [SportTotalGGRAmountEur]
 				,0 [SportCashBetAmountEur]  ,0 [SportCashWinAmountEur]  ,0 [SportCashGGRAmountEur]
 				,0 [SportBonusBetAmountEur]  ,0 [SportBonusWinAmountEur]  ,0 [SportBonusGGRAmountEur]
+				,0 [OtherTotalBetAmountEur],0 [OtherTotalWinAmountEur],0 [OtherTotalGGRAmountEur]
+				,0 [OtherCashBetAmountEur]  ,0 [OtherCashWinAmountEur]  ,0 [OtherCashGGRAmountEur]
+				,0 [OtherBonusBetAmountEur]  ,0 [OtherBonusWinAmountEur]  ,0 [OtherBonusGGRAmountEur]
 				,sum(case when cr.TypeId =95 and cr.state = 10 then cr.amountEur else 0 end) [JackpotAmountEur]
 				,sum(case when cr.TypeId =50 and cr.state = 10 then cr.amountEur else 0 end) [LiveDealerTipAmountEur]
 
@@ -525,6 +571,7 @@ FROM(
 				,0 [SportBonusAmountEur] 
 				,sum(case when cr.TypeId =82 and cr.state = 10 then cr.amountEur else 0 end) [BonusCancelledAmountEur]
 				,sum(case when cr.TypeId =83 and cr.state = 10 then cr.amountEur else 0 end) [BonusRedeemedAmountEur]
+				,0 [ApportionCostAmountEur]
 				,sum(case when cr.TypeId =84 and cr.state = 10 then cr.amountEur else 0 end) [CashbackBonusEur]
 				,sum(case when cr.TypeId =87 and cr.state = 10 then cr.amountEur else 0 end) [CasinoCashbackBonusEur]
 				,sum(case when cr.TypeId =504 and cr.state = 10 then cr.amountEur else 0 end) [LoyaltyPointRewardEur]
@@ -554,6 +601,7 @@ FROM(
 				,sum(case when cr.TypeId =313 and cr.state = 10 then cr.amountEur else 0 end) [DepositCorrectionAmountEur]
 				,sum(case when cr.TypeId =309 and cr.state = 10 then cr.amountEur else 0 end) [CashBackCorrectionAmountEur]
 			FROM [GoldblueUTC].[dbo].Document cr
+			WHERE convert(date,cr.Created) >= DATEADD(DAY, -1,GETDATE())
 			group by cr.ClientId,convert(date, cr.Created),cr.CurrencyId
 		union all
 			SELECT DISTINCT
@@ -580,51 +628,18 @@ FROM(
 				,sum(kpi.[TotalBetAmount])	,sum(kpi.[TotalBetCount])	,sum(kpi.[TotalWinAmount])	,sum(kpi.[TotalWinCount])	,sum(kpi.[TotalGGRAmount])
 				,sum(kpi.[CashBetAmount])	,sum(kpi.[CashBetCount])	,sum(kpi.[CashWinAmount])	,sum(kpi.[CashWinCount])	,sum(kpi.[CashGGRAmount])	
 				,sum(kpi.[BonusBetAmount])	,sum(kpi.[BonusBetCount])	,sum(kpi.[BonusWinAmount])	,sum(kpi.[BonusWinCount])	,sum(kpi.[BonusGGRAmount]) 		
-				,sum(case when kpi.Product='Slots' then kpi.[TotalBetAmount] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[TotalBetCount] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[TotalWinAmount] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[TotalWinCount] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[TotalGGRAmount] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[CashBetAmount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[CashBetCount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[CashWinAmount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[CashWinCount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[CashGGRAmount] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[BonusBetAmount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[BonusBetCount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[BonusWinAmount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[BonusWinCount] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[BonusGGRAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalBetAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalBetCount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalWinAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalWinCount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalGGRAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashBetAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashBetCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashWinAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashWinCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashGGRAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusBetAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusBetCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusWinAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusWinCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusGGRAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalBetAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalBetCount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalWinAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalWinCount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalGGRAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashBetAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashBetCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashWinAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashWinCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashGGRAmount] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusBetAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusBetCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusWinAmount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusWinCount] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusGGRAmount] else 0 end)
+				,sum(kpi.[SlotsTotalBetAmount]),sum(kpi.[SlotsTotalBetCount]),sum(kpi.[SlotsTotalWinAmount]),sum(kpi.[SlotsTotalWinCount]),sum(kpi.[SlotsTotalGGRAmount])
+				,sum(kpi.[SlotsCashBetAmount]),sum(kpi.[SlotsCashBetCount]),sum(kpi.[SlotsCashWinAmount]),sum(kpi.[SlotsCashWinCount]),sum(kpi.[SlotsCashGGRAmount])
+				,sum(kpi.[SlotsBonusBetAmount]),sum(kpi.[SlotsBonusBetCount]),sum(kpi.[SlotsBonusWinAmount]),sum(kpi.[SlotsBonusWinCount]),sum(kpi.[SlotsBonusGGRAmount])
+				,sum(kpi.[LiveTotalBetAmount]),sum(kpi.[LiveTotalBetCount]),sum(kpi.[LiveTotalWinAmount]),sum(kpi.[LiveTotalWinCount]),sum(kpi.[LiveTotalGGRAmount])
+				,sum(kpi.[LiveCashBetAmount]),sum(kpi.[LiveCashBetCount]),sum(kpi.[LiveCashWinAmount]),sum(kpi.[LiveCashWinCount]),sum(kpi.[LiveCashGGRAmount])
+				,sum(kpi.[LiveBonusBetAmount]),sum(kpi.[LiveBonusBetCount]),sum(kpi.[LiveBonusWinAmount]),sum(kpi.[LiveBonusWinCount]),sum(kpi.[LiveBonusGGRAmount])
+				,sum(kpi.[SportTotalBetAmount]),sum(kpi.[SportTotalBetCount]),sum(kpi.[SportTotalWinAmount]),sum(kpi.[SportTotalWinCount]),sum(kpi.[SportTotalGGRAmount])
+				,sum(kpi.[SportCashBetAmount]),sum(kpi.[SportCashBetCount]),sum(kpi.[SportCashWinAmount]),sum(kpi.[SportCashWinCount]),sum(kpi.[SportCashGGRAmount])
+				,sum(kpi.[SportBonusBetAmount]),sum(kpi.[SportBonusBetCount]),sum(kpi.[SportBonusWinAmount]),sum(kpi.[SportBonusWinCount]),sum(kpi.[SportBonusGGRAmount])
+				,sum(kpi.[OtherTotalBetAmount]),sum(kpi.[OtherTotalBetCount]),sum(kpi.[OtherTotalWinAmount]),sum(kpi.[OtherTotalWinCount]),sum(kpi.[OtherTotalGGRAmount])
+				,sum(kpi.[OtherCashBetAmount]),sum(kpi.[OtherCashBetCount]),sum(kpi.[OtherCashWinAmount]),sum(kpi.[OtherCashWinCount]),sum(kpi.[OtherCashGGRAmount])
+				,sum(kpi.[OtherBonusBetAmount]),sum(kpi.[OtherBonusBetCount]),sum(kpi.[OtherBonusWinAmount]),sum(kpi.[OtherBonusWinCount]),sum(kpi.[OtherBonusGGRAmount])
 				,0 [JackpotAmount]
 				,0 [JackpotCount]
 				,0 [LiveDealerTipAmount]
@@ -640,6 +655,7 @@ FROM(
 				,0 [BonusCancelledCount]
 				,0 [BonusRedeemedAmount]
 				,0 [BonusRedeemedCount]
+				,0 [ApportionCostAmount]
 				,0 [CashbackBonus]
 				,0 [CasinoCashbackBonus]
 				,0 [LoyaltyPointReward]
@@ -703,37 +719,19 @@ FROM(
 				,0 [NetSpreadAmountEur]
 				,sum(kpi.[TotalBetAmountEur])		,sum(kpi.[TotalWinAmountEur])		,sum(kpi.[TotalGGRAmountEur])
 				,sum(kpi.[CashBetAmountEur])		,sum(kpi.[CashWinAmountEur])	,sum(kpi.[CashGGRAmountEur])	
-				,sum(kpi.[BonusBetAmountEur])		,sum(kpi.[BonusWinAmountEur])		,sum(kpi.[BonusGGRAmountEur]) 
-		
-				,sum(case when kpi.Product='Slots' then kpi.[TotalBetAmountEur] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[TotalWinAmountEur] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[TotalGGRAmountEur] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[CashBetAmountEur] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[CashWinAmountEur] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[CashGGRAmountEur] else 0 end)
-				,sum(case when kpi.Product='Slots' then kpi.[BonusBetAmountEur] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[BonusWinAmountEur] else 0 end) 
-				,sum(case when kpi.Product='Slots' then kpi.[BonusGGRAmountEur] else 0 end)
-
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalBetAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalWinAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[TotalGGRAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashBetAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashWinAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[CashGGRAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusBetAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusWinAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Casino' and kpi.Product!='Slots' then kpi.[BonusGGRAmountEur] else 0 end)
-
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalBetAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalWinAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[TotalGGRAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashBetAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashWinAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[CashGGRAmountEur] else 0 end)
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusBetAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusWinAmountEur] else 0 end) 
-				,sum(case when kpi.ProductCategory = 'Sportsbook' then kpi.[BonusGGRAmountEur] else 0 end)
+				,sum(kpi.[BonusBetAmountEur])		,sum(kpi.[BonusWinAmountEur])		,sum(kpi.[BonusGGRAmountEur]) 		
+				,sum(kpi.[SlotsTotalBetAmountEur])		,sum(kpi.[SlotsTotalWinAmountEur])		,sum(kpi.[SlotsTotalGGRAmountEur])
+				,sum(kpi.[SlotsCashBetAmountEur])		,sum(kpi.[SlotsCashWinAmountEur])	,sum(kpi.[SlotsCashGGRAmountEur])	
+				,sum(kpi.[SlotsBonusBetAmountEur])		,sum(kpi.[SlotsBonusWinAmountEur])		,sum(kpi.[SlotsBonusGGRAmountEur]) 
+				,sum(kpi.[LiveTotalBetAmountEur])		,sum(kpi.[LiveTotalWinAmountEur])		,sum(kpi.[LiveTotalGGRAmountEur])
+				,sum(kpi.[LiveCashBetAmountEur])		,sum(kpi.[LiveCashWinAmountEur])	,sum(kpi.[LiveCashGGRAmountEur])	
+				,sum(kpi.[LiveBonusBetAmountEur])		,sum(kpi.[LiveBonusWinAmountEur])		,sum(kpi.[LiveBonusGGRAmountEur]) 
+				,sum(kpi.[SportTotalBetAmountEur])		,sum(kpi.[SportTotalWinAmountEur])		,sum(kpi.[SportTotalGGRAmountEur])
+				,sum(kpi.[SportCashBetAmountEur])		,sum(kpi.[SportCashWinAmountEur])	,sum(kpi.[SportCashGGRAmountEur])	
+				,sum(kpi.[SportBonusBetAmountEur])		,sum(kpi.[SportBonusWinAmountEur])		,sum(kpi.[SportBonusGGRAmountEur]) 
+				,sum(kpi.[OtherTotalBetAmountEur])		,sum(kpi.[OtherTotalWinAmountEur])		,sum(kpi.[OtherTotalGGRAmountEur])
+				,sum(kpi.[OtherCashBetAmountEur])		,sum(kpi.[OtherCashWinAmountEur])	,sum(kpi.[OtherCashGGRAmountEur])	
+				,sum(kpi.[OtherBonusBetAmountEur])		,sum(kpi.[OtherBonusWinAmountEur])		,sum(kpi.[OtherBonusGGRAmountEur]) 
 				,0 [JackpotAmountEur]
 				,0 [LiveDealerTipAmountEur]
 
@@ -742,6 +740,7 @@ FROM(
 				,0 [SportBonusAmountEur] 
 				,0 [BonusCancelledAmountEur]
 				,0 [BonusRedeemedAmountEur]
+				,0 [ApportionCostAmountEur]
 				,0 [CashbackBonusEur]
 				,0 [CasinoCashbackBonusEur]
 				,0 [LoyaltyPointRewardEur]
@@ -771,6 +770,7 @@ FROM(
 				,0 [DepositCorrectionAmountEur]
 				,0 [CashBackCorrectionAmountEur]
 			FROM [GoldblueUTC].[dbo].ClientGameKPI kpi
+			WHERE convert(date,kpi.Date) >= DATEADD(DAY, -1,GETDATE())
 			group by kpi.Date,kpi.Clientid,kpi.CurrencyId
 	union all
 			SELECT DISTINCT
@@ -778,9 +778,9 @@ FROM(
 			,convert(date,a.[BalanceDate]) [Date]
 			,a.CurrencyId
 			,sum(case when a.BalanceTypeId=5211 then a.[BalanceAmount] else 0 end) RealWalletBalance
-			,sum(case when a.BalanceTypeId=8124 then a.[BalanceAmount] else 0 end)+sum(case when a.BalanceTypeId=8154 then a.[BalanceAmount] else 0 end) [BonusWalletBalance] 
-			,sum(case when a.BalanceTypeId=8124 then a.[BalanceAmount] else 0 end) CasinoBonusWalletBalance
-			,sum(case when a.BalanceTypeId=8154 then a.[BalanceAmount] else 0 end) SportBonusWalletBalance
+			,sum(case when a.BalanceTypeId in (8124,8125) then a.[BalanceAmount] else 0 end)+sum(case when a.BalanceTypeId in (8154,8155) then a.[BalanceAmount] else 0 end) [BonusWalletBalance] 
+			,sum(case when a.BalanceTypeId in (8124,8125) then a.[BalanceAmount] else 0 end) CasinoBonusWalletBalance
+			,sum(case when a.BalanceTypeId in (8154,8155) then a.[BalanceAmount] else 0 end) SportBonusWalletBalance
 			,0 [DepositAmount]
 			,0 [DepositCount]
 			,0 [WithdrawalAmount]
@@ -806,6 +806,9 @@ FROM(
 			,0 [SportTotalBetAmount],0 [SportTotalBetCount],0 [SportTotalWinAmount],0 [SportTotalWinCount],0 [SportTotalGGRAmount]
 			,0 [SportCashBetAmount] ,0 [SportCashBetCount] ,0 [SportCashWinAmount] ,0 [SportCashWinCount] ,0 [SportCashGGRAmount]
 			,0 [SportBonusBetAmount] ,0 [SportBonusBetCount] ,0 [SportBonusWinAmount] ,0 [SportBonusWinCount] ,0 [SportBonusGGRAmount]
+			,0 [OtherTotalBetAmount],0 [OtherTotalBetCount],0 [OtherTotalWinAmount],0 [OtherTotalWinCount],0 [OtherTotalGGRAmount]
+			,0 [OtherCashBetAmount] ,0 [OtherCashBetCount] ,0 [OtherCashWinAmount] ,0 [OtherCashWinCount] ,0 [OtherCashGGRAmount]
+			,0 [OtherBonusBetAmount] ,0 [OtherBonusBetCount] ,0 [OtherBonusWinAmount] ,0 [OtherBonusWinCount] ,0 [OtherBonusGGRAmount]
 			,0 [JackpotAmount]
 			,0 [JackpotCount]
 			,0 [LiveDealerTipAmount]
@@ -821,6 +824,7 @@ FROM(
 			,0 [BonusCancelledCount]
 			,0 [BonusRedeemedAmount]
 			,0 [BonusRedeemedCount]
+			,0 [ApportionCostAmount]
 			,0 [CashbackBonus]
 			,0 [CasinoCashbackBonus]
 			,0 [LoyaltyPointReward]
@@ -871,10 +875,10 @@ FROM(
 			,0 [CashBackCorrectionAmount]
 			,0 [CashBackCorrectionCount]
 
-			,sum(case when a.BalanceTypeId=5211 then a.[BalanceAmountEur] else 0 end) RealWalletBalance
-			,sum(case when a.BalanceTypeId=8124 then a.[BalanceAmountEur] else 0 end)+sum(case when a.BalanceTypeId=8154 then a.[BalanceAmount] else 0 end) [BonusWalletBalance] 
-			,sum(case when a.BalanceTypeId=8124 then a.[BalanceAmountEur] else 0 end) CasinoBonusWalletBalance
-			,sum(case when a.BalanceTypeId=8154 then a.[BalanceAmountEur] else 0 end) SportBonusWalletBalance
+			,sum(case when a.BalanceTypeId=5211 then a.[BalanceAmountEur] else 0 end) RealWalletBalanceEur
+			,sum(case when a.BalanceTypeId in (8124,8125) then a.[BalanceAmountEur] else 0 end)+sum(case when a.BalanceTypeId in (8154,8155) then a.[BalanceAmount] else 0 end) [BonusWalletBalanceEur] 
+			,sum(case when a.BalanceTypeId in (8124,8125) then a.[BalanceAmountEur] else 0 end) CasinoBonusWalletBalanceEur
+			,sum(case when a.BalanceTypeId in (8154,8155) then a.[BalanceAmountEur] else 0 end) SportBonusWalletBalanceEur
 			,0 [DepositAmountEur]
 			,0 [WithdrawalAmountEur]
 			,0 [RejectedDepositAmountEur]
@@ -894,6 +898,9 @@ FROM(
 			,0 [SportTotalBetAmountEur],0 [SportTotalWinAmountEur],0 [SportTotalGGRAmountEur]
 			,0 [SportCashBetAmountEur]  ,0 [SportCashWinAmountEur]  ,0 [SportCashGGRAmountEur]
 			,0 [SportBonusBetAmountEur]  ,0 [SportBonusWinAmountEur]  ,0 [SportBonusGGRAmountEur]
+			,0 [OtherTotalBetAmountEur],0 [OtherTotalWinAmountEur],0 [OtherTotalGGRAmountEur]
+			,0 [OtherCashBetAmountEur]  ,0 [OtherCashWinAmountEur]  ,0 [OtherCashGGRAmountEur]
+			,0 [OtherBonusBetAmountEur]  ,0 [OtherBonusWinAmountEur]  ,0 [OtherBonusGGRAmountEur]
 			,0 [JackpotAmountEur]
 			,0 [LiveDealerTipAmountEur]
 
@@ -902,6 +909,7 @@ FROM(
 			,0 [SportBonusAmountEur] 
 			,0 [BonusCancelledAmountEur]
 			,0 [BonusRedeemedAmountEur]
+			,0 [ApportionCostAmountEur]
 			,0 [CashbackBonusEur]
 			,0 [CasinoCashbackBonusEur]
 			,0 [LoyaltyPointRewardEur]
@@ -931,15 +939,13 @@ FROM(
 			,0 [DepositCorrectionAmountEur]
 			,0 [CashBackCorrectionAmountEur]
 		FROM [GoldblueUTC].[dbo].[Balance] a
+		WHERE convert(date,a.BalanceDate) >= DATEADD(DAY, -1,GETDATE())
 		group by 
 			ObjectId 
 			,convert(date,[BalanceDate]) 
 			,[CurrencyId]
-
-
-
 ) a
 	left join [GoldblueUTC].[dbo].Client cl on a.clientid = cl.id
 	join [GoldblueUTC].[dbo].Region reg on cl.RegionId = reg.Id 
 where cl.istest = 0
-group by a.[ClientId],a.[date],a.CurrencyId,reg.Alpha2Code
+group by a.[ClientId],cl.Login,a.[date],a.CurrencyId,reg.Alpha2Code

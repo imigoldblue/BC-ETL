@@ -40,11 +40,12 @@ GO
 ALTER TABLE [GoldblueUTC].[dbo].[Balance] ADD  DEFAULT ((1)) FOR [SessionId]
 GO
 
+delete from [GoldblueUTC].[dbo].[Balance] where [BalanceDate]>= DATEADD(DAY, -1,GETDATE());
 
 insert into [GoldblueUTC].[dbo].[Balance]
 SELECT DISTINCT 
 		[AccountId]
-      ,[BalanceDate]
+      ,convert(date,DATEADD(HOUR,-4,a.[Modified])) [BalanceDate]
       ,[Debit]
       ,[Credit]
       ,[BalanceAmount]
@@ -60,7 +61,8 @@ SELECT DISTINCT
 	,case when reverse(substring(reverse([AccountId]),0,charindex('-',reverse([AccountId])))) = 'EUR' THEN a.[Credit] else a.[Credit]/cru.Rate end 
 	,case when reverse(substring(reverse([AccountId]),0,charindex('-',reverse([AccountId])))) = 'EUR' THEN a.[BalanceAmount] else a.[BalanceAmount]/cru.Rate end
 FROM [Goldblue].[dbo].[Balance] a
-	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on EOMONTH(DATEADD(HOUR,-4,a.[Modified]))= cru.CalendarDt and reverse(substring(reverse([AccountId]),0,charindex('-',reverse([AccountId])))) = cru.FromCurrency	
+	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,a.[Modified]))-1, -1))= cru.CalendarDt and reverse(substring(reverse([AccountId]),0,charindex('-',reverse([AccountId])))) = cru.FromCurrency	
+where convert(date,DATEADD(HOUR,-4,a.[Modified]))>= DATEADD(DAY, -1,GETDATE());
 
 
 	
