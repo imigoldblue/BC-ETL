@@ -44,8 +44,9 @@ GO
 
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[Document] ON
 GO
-delete from [GoldblueUTC].[dbo].[Document] where [Created]>= DATEADD(DAY, -1,GETDATE());
-
+Declare @id bigint
+Set @id = (select MAX(id) from [GoldblueUTC].[dbo].[Document])
+-- truncate table [GoldblueUTC].[dbo].[Document];
 insert into [GoldblueUTC].[dbo].[Document]
 	([Id]       ,[PartnerId]      ,[TypeId]      ,[GameId]      ,[CurrencyId]      ,[State]      ,[Amount]      ,[TransactionDate]      ,[Created]      ,[Modified]    	,[SessionId]      ,[AmountExpression]      ,[CashDeskId]
       ,[PaymentSystemId]      ,[ClientId]      ,[Note]      ,[ParentId]      ,[ExternalId]      ,[ExternalTypeId]      ,[ClientSessionId]      ,[UpdateVersion]      ,[IsProcessed]      ,[PaidCashDeskId]      ,[ThirdPartyId]      ,[IsReviewed]	  ,[AmountEur] )
@@ -77,10 +78,9 @@ SELECT DISTINCT
       ,[IsReviewed]
 	  ,case when d.CurrencyId = 'EUR' THEN d.Amount else d.Amount/cru.Rate end [AmountEur]
 
-FROM [Goldblue].[dbo].[Document] d
+FROM [GBU].[Goldblue].[dbo].[Document] d
 	LEFT join [GoldblueUTC].[dbo].[CurrencyRateUpdate] cru on convert(date,DATEADD(MONTH, DATEDIFF(MONTH, -1, DATEADD(HOUR,-4,d.Created))-1, -1))= cru.CalendarDt and d.CurrencyId = cru.FromCurrency
-where DATEADD(HOUR,-4,d.[Created])>= DATEADD(DAY, -1,GETDATE())
-
+where d.id > @id
 SET IDENTITY_INSERT  [GoldblueUTC].[dbo].[Document] OFF
 GO
 
